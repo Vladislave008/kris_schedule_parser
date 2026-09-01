@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Расписание</title>
+  <meta name="theme-color" content="#6c5ce7">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="app-header">
+    <h1 class="app-title">Расписание</h1>
+    <button id="settingsBtn" class="icon-btn" aria-label="Настройки">⚙</button>
+  </header>
+
+  <!-- Календарный бар: текущая неделя + навигация -->
+  <div class="calendar-wrap">
+    <div class="cal-row">
+      <div class="week-nav">
+        <button id="prevWeekBtn" class="icon-btn week-btn" aria-label="Прошлая неделя">‹</button>
+        <div id="calendarBar" class="calendar-bar"></div>
+        <button id="nextWeekBtn" class="icon-btn week-btn" aria-label="Следующая неделя">›</button>
+      </div>
+      <button id="datePickBtn" class="icon-btn date-pick" aria-label="Выбрать дату">📅</button>
+      <button id="todayBtn" class="today-btn" aria-label="Вернуться в текущий день" hidden>↻</button>
+    </div>
+    <div class="week-label" id="weekLabel"></div>
+  </div>
+
+  <!-- Переключатель групп (всегда доступен, запоминает выбор) -->
+  <div id="groupBar" class="group-bar" hidden></div>
+
+  <input type="date" id="dateInput" hidden>
+
+  <!-- Основная зона дня -->
+  <main id="dayView" class="day-view"></main>
+
+  <div class="empty-state" id="emptyState" hidden>
+    <div class="empty-icon">🗓</div>
+    <p>Расписание ещё не загружено</p>
+    <button id="emptyUploadBtn" class="btn btn-primary">Загрузить расписание</button>
+  </div>
+
+  <!-- Панель загрузки / статус Pyodide -->
+  <div id="bootOverlay" class="overlay">
+    <div class="boot-card">
+      <div class="spinner"></div>
+      <p id="bootText">Инициализация парсера…</p>
+    </div>
+  </div>
+
+  <!-- Боковое меню (группы) -->
+  <div id="menuOverlay" class="drawer-backdrop" hidden>
+    <aside class="drawer">
+      <h2>Группа</h2>
+      <div id="groupList" class="group-list"></div>
+      <p class="drawer-hint">Группы определяются автоматически из файлов.</p>
+      <button id="loadFileBtn" class="btn btn-primary btn-block">📥 Загрузить .xlsx</button>
+      <button id="clearAllBtn" class="btn btn-danger btn-block">Очистить расписание</button>
+      <button id="closeMenuBtn" class="btn btn-ghost btn-block">Закрыть</button>
+    </aside>
+  </div>
+
+  <input type="file" id="fileInput" accept=".xlsx,.xlsm,.xls" multiple hidden>
+
+  <!-- Настройки (тема / цвет) -->
+  <div id="settingsOverlay" class="settings-backdrop" hidden>
+    <div class="settings-panel">
+      <h2>Настройки</h2>
+      <div class="settings-tabs">
+        <button id="tabTheme" class="on">Тема</button>
+        <button id="tabColor">Цвет</button>
+      </div>
+      <div id="settingsTheme" class="settings-tab-body">
+        <div class="settings-row">
+          <label for="themeSwitch">Тёмная тема</label>
+          <label class="switch">
+            <input type="checkbox" id="themeSwitch">
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+      <div id="settingsColor" class="settings-tab-body" hidden>
+        <p class="drawer-hint">Акцентный цвет приложения</p>
+        <div class="color-grid" id="colorGrid"></div>
+      </div>
+      <div class="settings-actions">
+        <button id="loadFileBtn2" class="btn btn-primary btn-block">📥 Загрузить .xlsx</button>
+        <button id="clearAllBtn2" class="btn btn-danger btn-block">Очистить расписание</button>
+      </div>
+      <button id="closeSettingsBtn" class="btn btn-ghost btn-block settings-close">Закрыть</button>
+    </div>
+  </div>
+
+  <footer id="toast" class="toast" hidden></footer>
+
+  <script src="https://cdn.jsdelivr.net/pyodide/v314.0.6/full/pyodide.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

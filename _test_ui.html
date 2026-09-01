@@ -1,0 +1,52 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8">
+<script src="https://cdn.jsdelivr.net/pyodide/v314.0.6/full/pyodide.js"></script>
+<style> iframe{width:100%;height:1200px;border:0} pre{white-space:pre-wrap} </style>
+</head>
+<body>
+<div id="status">loading</div>
+<pre id="out"></pre>
+<div id="host"></div>
+<script>
+(async () => {
+  const out = document.getElementById("out");
+  const log = (t) => { out.textContent += t + "\n"; };
+  try {
+    // 1) parse sample
+    const pyodide = await loadPyodide({ indexURL: "https://cdn.jsdelivr.net/pyodide/v314.0.6/full/" });
+    const src = await (await fetch("parser.py")).text();
+    pyodide.runPython(src);
+    const resp = await fetch("schedule_samples/3 курс.xlsx");
+    const buffer = await resp.arrayBuffer();
+    pyodide.globals.set("__b__", new Uint8Array(buffer));
+    pyodide.runPython("__r__ = parse_to_json(bytes(__b__))");
+    const parsed = JSON.parse(pyodide.globals.get("__r__"));
+    log("parsed days=" + Object.keys(parsed.days).length + " groups=" + JSON.stringify(parsed.groups));
+
+    // 2) seed IndexedDB (same schema as app: kv store, key 'data')
+    const db = await new Promise((res, rej) => { const q = indexedDB.open("schedule-db", 1); q.onupgradeneeded = () => { const d=q.result; if(!d.objectStoreNames.contains("kv")) d.createObjectStore("kv"); }; q.onsuccess=()=>res(q.result); q.onerror=()=>rej(q.error); });
+    await new Promise((res, rej) => { const tx = db.transaction("kv","readwrite"); tx.objectStore("kv").put({ days: parsed.days, groups: parsed.groups, files:["sample.xlsx"], updatedAt: new Date().toISOString() }, "data"); tx.oncomplete=res; tx.onerror=()=>rej(tx.error); });
+
+    // 3) load index.html in iframe and inspect
+    const iframe = document.createElement("iframe");
+    iframe.src = "index.html";
+    document.getElementById("host").appendChild(iframe);
+    await new Promise(r => setTimeout(r, 20000));
+    const idoc = iframe.contentDocument;
+    const chips = idoc.querySelectorAll(".day-chip").length;
+    const hasLessonsChips = idoc.querySelectorAll(".day-chip.has-lessons").length;
+    const cards = idoc.querySelectorAll(".lesson-card").length;
+    const firstCardText = idoc.querySelector(".lesson-card .lesson-text");
+    log("chips=" + chips + " chipsWithLessons=" + hasLessonsChips + " lessonCards=" + cards);
+    log("firstCard=" + (firstCardText ? firstCardText.textContent.slice(0,60) : "none"));
+    const emptyStateHidden = idoc.querySelector("#emptyState").hidden;
+    log("emptyStateHidden=" + emptyStateHidden);
+    const ok = cards > 0 && hasLessonsChips > 0 && emptyStateHidden === true;
+    log("RESULT=" + (ok ? "OK" : "FAIL"));
+    document.getElementById("status").textContent = ok ? "done-ok" : "done-fail";
+  } catch(e){ log("FATAL " + (e && e.message)); document.getElementById("status").textContent="done-fail"; }
+})();
+</script>
+</body>
+</html>

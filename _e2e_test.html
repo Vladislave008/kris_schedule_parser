@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8"></head>
+<body>
+  <div id="status">loading...</div>
+  <pre id="out"></pre>
+  <script src="https://cdn.jsdelivr.net/pyodide/v314.0.6/full/pyodide.js"></script>
+  <script>
+    (async () => {
+      const log = (t) => { document.getElementById("out").textContent += t + "\n"; };
+      try {
+        const pyodide = await loadPyodide({ indexURL: "https://cdn.jsdelivr.net/pyodide/v314.0.6/full/" });
+        log("PYODIDE_VERSION=" + pyodide.runPython("import sys; sys.version"));
+        const src = await (await fetch("parser.py")).text();
+        pyodide.runPython(src);
+        log("PARSER_LOADED");
+        // fetch the sample
+        const names = ["schedule_samples/3 курс.xlsx"];
+        let ok = false;
+        for (const n of names) {
+          try {
+            const resp = await fetch(n);
+            if (!resp.ok) { log("FETCH " + n + " status=" + resp.status); continue; }
+            const buffer = await resp.arrayBuffer();
+            pyodide.globals.set("__test_bytes__", new Uint8Array(buffer));
+            pyodide.runPython("__test_res__ = parse_to_json(bytes(__test_bytes__))");
+            const jsonStr = pyodide.globals.get("__test_res__");
+            const parsed = JSON.parse(jsonStr);
+            log("PARSED groups=" + JSON.stringify(parsed.groups));
+            log("PARSED dayCount=" + Object.keys(parsed.days).length);
+            const iso = Object.keys(parsed.days).sort()[0];
+            log("FIRST_DAY=" + iso + " -> " + JSON.stringify(parsed.days[iso]).slice(0, 160));
+            const total = Object.values(parsed.days).reduce((a, g) => a + Object.values(g).reduce((aa, l) => aa + l.length, 0), 0);
+            log("TOTAL_LESSONS=" + total);
+            ok = true;
+            break;
+          } catch (e) { log("ERR " + n + " " + (e && e.message)); }
+        }
+        log("RESULT=" + (ok ? "OK" : "FAIL"));
+        document.getElementById("status").textContent = ok ? "done-ok" : "done-fail";
+      } catch (e) {
+        log("FATAL " + (e && e.message));
+        document.getElementById("status").textContent = "done-fail";
+      }
+    })();
+  </script>
+</body>
+</html>
