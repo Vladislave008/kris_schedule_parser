@@ -104,24 +104,26 @@ body {
 .cal-row {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 8px 10px;
+  gap: 4px;
+  padding: 6px 6px;
 }
 .week-nav {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 3px;
   flex: 1;
   min-width: 0;
 }
 .week-btn {
   flex: 0 0 auto;
-  font-size: 26px;
+  width: 32px;
+  height: 32px;
+  font-size: 22px;
   line-height: 1;
 }
 .calendar-bar {
   display: flex;
-  gap: 6px;
+  gap: 4px;
   flex: 1;
   overflow-x: auto;
   justify-content: space-between;
@@ -141,18 +143,18 @@ body {
 .date-pick { flex: 0 0 auto; }
 .day-chip {
   flex: 0 0 auto;
-  min-width: 56px;
-  padding: 8px 6px;
-  border-radius: 14px;
+  min-width: 38px;
+  padding: 6px 3px;
+  border-radius: 12px;
   background: var(--surface-2);
   text-align: center;
   cursor: pointer;
   border: 2px solid transparent;
   transition: transform 0.1s ease, background 0.2s ease, color 0.2s ease;
 }
-.day-chip .dow { font-size: 11px; color: var(--text-2); font-weight: 600; text-transform: uppercase; }
-.day-chip .dnum { display: block; font-size: 18px; font-weight: 700; margin: 2px 0; color: var(--text-2); }
-.day-chip .dmon { font-size: 11px; color: var(--text-2); }
+.day-chip .dow { font-size: 10px; color: var(--text-2); font-weight: 600; text-transform: uppercase; }
+.day-chip .dnum { display: block; font-size: 16px; font-weight: 700; margin: 1px 0; color: var(--text-2); }
+.day-chip .dmon { font-size: 10px; color: var(--text-2); }
 .day-chip.today { border-color: var(--primary); color: var(--primary); }
 .day-chip.today .dnum { color: var(--primary); }
 
