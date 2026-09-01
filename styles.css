@@ -192,11 +192,13 @@ body {
 }
 .day-heading {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 10px;
   margin-bottom: 14px;
+  justify-content: flex-start;
+  min-width: 0;
 }
-.day-heading h2 { font-size: 20px; font-weight: 700; }
+.day-heading h2 { font-size: 20px; font-weight: 700; flex: 0 1 auto; min-width: 0; }
 .day-heading .group-tag {
   font-size: 13px;
   color: var(--primary);
@@ -206,7 +208,9 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  max-width: 60%;
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 55%;
 }
 .lesson-card {
   background: var(--surface);
