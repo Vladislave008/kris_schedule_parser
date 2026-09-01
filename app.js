@@ -291,6 +291,12 @@
     todayBtn.hidden = !state.selectedDate || state.selectedDate === todayISO();
   }
 
+  // Короткое имя группы для отображения (бар с выбором группы не трогаем —
+  // там остаются полные названия из данных).
+  function displayGroupName(name) {
+    return String(name).replace(/языковая группа/gi, "группа");
+  }
+
   // ---------- Рендер дня ----------
   function renderDay() {
     const iso = state.selectedDate || todayISO();
@@ -321,7 +327,7 @@
     if (state.selectedGroup) {
       const tag = document.createElement("span");
       tag.className = "group-tag";
-      tag.textContent = state.selectedGroup;
+      tag.textContent = displayGroupName(state.selectedGroup);
       heading.appendChild(tag);
     }
     dayView.appendChild(heading);
@@ -464,6 +470,10 @@
     const dark = localStorage.getItem("rc-theme") === "dark";
     document.documentElement.setAttribute("data-theme", dark ? "dark" : "");
     if (themeSwitch) themeSwitch.checked = dark;
+
+    // статус-бар браузера в цвет шапки приложения (следует за темой)
+    const tc = document.querySelector('meta[name="theme-color"]');
+    if (tc) tc.setAttribute("content", dark ? "#171a22" : "#ffffff");
   }
   function setTheme(mode) {
     localStorage.setItem("rc-theme", mode);
