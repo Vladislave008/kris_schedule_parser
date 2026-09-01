@@ -14,6 +14,8 @@
 <body>
   <header class="app-header">
     <h1 class="app-title">Расписание</h1>
+    <button id="datePickBtn" class="icon-btn date-pick" aria-label="Выбрать дату">📅</button>
+    <button id="todayBtn" class="today-btn" aria-label="Вернуться в текущий день" hidden>↻</button>
     <button id="settingsBtn" class="icon-btn" aria-label="Настройки">⚙</button>
   </header>
 
@@ -25,8 +27,6 @@
         <div id="calendarBar" class="calendar-bar"></div>
         <button id="nextWeekBtn" class="icon-btn week-btn" aria-label="Следующая неделя">›</button>
       </div>
-      <button id="datePickBtn" class="icon-btn date-pick" aria-label="Выбрать дату">📅</button>
-      <button id="todayBtn" class="today-btn" aria-label="Вернуться в текущий день" hidden>↻</button>
     </div>
     <div class="week-label" id="weekLabel"></div>
   </div>
